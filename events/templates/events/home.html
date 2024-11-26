@@ -1,0 +1,139 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center">
+        <h1 class="display-4 text-primary">Welcome to Our Exciting Events!</h1>
+        <p class="lead text-secondary">Discover the best events happening!</p>
+        <p class="text-muted">Current Time: {{ time }}</p>
+    </div>
+
+    <!-- Month and Year Selection Form -->
+    <form method="GET" action="{% url 'home' %}" class="text-center mb-4">
+        <div class="form-row justify-content-center">
+            <div class="form-group col-md-4">
+                <select name="month" class="form-control" required>
+                    <option value="">Select Month</option>
+                    {% for month_num, month_name in months.items %}
+                        <option value="{{ month_num }}" {% if month_num == selected_month %}selected{% endif %}>{{ month_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <select name="year" class="form-control" required>
+                    <option value="">Select Year</option>
+                    {% for year in years %}
+                        <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <button type="submit" class="btn btn-primary">Show Events</button>
+            </div>
+        </div>
+    </form>
+
+    <h3 class="mt-4 text-success">Featured Events for {{ month_name }} {{ selected_year }}</h3>
+</br>
+
+    {% if event_list %}
+        <div class="row" id="event-list">
+            {% for event in event_list %}
+                <div class="col-md-4 mb-4">
+                    <div class="card event-card">
+                        <div class="card-header">
+                            <h5 class="card-title">{{ event.name }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">Location: {{ event.venue }}</h6>
+                            <p class="card-text text-dark">
+                                <ul class="list-unstyled">
+                                    <li><strong>Date:</strong> {{ event.event_date }}</li>
+                                    <li><strong>Website:</strong> <a href="{{ event.venue.web }}" target="_blank">{{ event.venue.web }}</a></li>
+                                    <li><strong>Organizer:</strong> {{ event.manager }}</li>
+                                    <li><strong>Details:</strong> {{ event.description }}</li>
+                                    <li><strong>Attendees:</strong>
+                                        <ul>
+                                            {% for user in event.attendees.all %}
+                                                <li>{{ user }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </p>
+                        </div>
+                        {% if user.is_authenticated %}
+                            {% if user == event.manager %}
+                                <div class="card-footer text-muted">
+                                    <a href="{% url 'update-event' event.id %}" class="btn btn-outline-secondary btn-sm">Edit Event</a>
+                                    <a href="{% url 'delete-event' event.id %}" class="btn btn-outline-danger btn-sm">Remove Event</a>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            {{ no_events_message }}
+        </div>
+    {% endif %}
+
+    <footer class="text-center mt-5">
+        <hr>
+        <p class="text-muted">&copy; {{ current_year }} Your Company Name. All Rights Reserved.</p>
+    </footer>
+</div>
+
+<!-- Custom JavaScript -->
+<script>
+    // Example: Show alert when an event card is clicked
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', () => {
+            const title = card.querySelector('.card-title').innerText;
+            alert(`You clicked on event: ${title}`);
+        });
+    });
+</script>
+
+<!-- Custom CSS -->
+<style>
+    body {
+    background-color: #f8f9fa; /* Light background color */
+}
+
+.event-card {
+    border: 2px solid #007bff; /* Blue border for cards */
+    border-radius: 0.5rem; /* Rounded corners */
+    transition: transform 0.3s, box-shadow 0.3s; /* Smooth transition for hover effect */
+}
+
+.event-card:hover {
+    transform: scale(1.05); /* Scale effect on hover */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Shadow effect on hover */
+}
+
+.card-header {
+    background-color: #007bff; /* Header background color */
+    color: white; /* Header text color */
+}
+
+.card-title {
+    color: white; /* Title color */
+}
+
+.card-body {
+    background-color: #ffffff; /* Card body background color */
+}
+
+ul {
+    padding-left: 0; /* Remove default padding for lists */
+}
+
+ul.list-unstyled li {
+    margin-bottom: 0.5rem; /* Space between list items */
+}
+    
+</style>
+{% endblock %}

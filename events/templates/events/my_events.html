@@ -1,0 +1,98 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-primary">My Events</h2>
+    <br/>
+
+    <div class="row">
+        {% for event in events %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm event-card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">{{ event }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title">Venue: {{ event.venue }}</h6>
+                        <p class="card-text">
+                            <ul class="list-unstyled">
+                                <li><strong>Date:</strong> {{ event.event_date }}</li>
+                                <li><strong>Venue Website:</strong> <a href="{{ event.venue.web }}" target="_blank">{{ event.venue.web }}</a></li>
+                                <li><strong>Manager:</strong> {{ event.manager }}</li>
+                                <li><strong>Description:</strong> {{ event.description }}</li>
+                                <li><strong>Attendees:</strong><br/>
+                                    {% for user in event.attendees.all %}
+                                        {{ user }}<br/>
+                                    {% endfor %}
+                                </li>
+                            </ul>
+                        </p>
+                    </div>
+                    {% if user.is_authenticated %}
+                        {% if user == event.manager %}
+                            <div class="card-footer text-muted">
+                                <a href="{% url 'update-event' event.id %}" class="btn btn-outline-secondary btn-sm">Update Event</a>
+                                <a href="#" class="btn btn-outline-danger btn-sm delete-event" data-url="{% url 'delete-event' event.id %}">Delete Event</a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this event? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <a href="#" id="confirmDelete" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom JavaScript -->
+<script>
+    // Set up event listeners for delete buttons
+    document.querySelectorAll('.delete-event').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default link behavior
+
+            const url = this.getAttribute('data-url'); // Get the URL for deletion
+            document.getElementById('confirmDelete').setAttribute('href', url); // Set the delete URL in the modal
+
+            // Show the modal
+            $('#deleteModal').modal('show');
+        });
+    });
+</script>
+
+<!-- Custom CSS -->
+<style>
+    .event-card {
+        transition: transform 0.2s; /* Smooth transition for hover effect */
+    }
+    
+    .event-card:hover {
+        transform: scale(1.05); /* Scale up on hover */
+    }
+    
+    .modal-header {
+        background-color: #dc3545; /* Bootstrap danger color */
+        color: white;
+    }
+</style>
+
+{% endblock %}

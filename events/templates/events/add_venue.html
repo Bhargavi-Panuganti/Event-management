@@ -1,0 +1,79 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    {% if user.is_authenticated %}
+        <div class="card border-light shadow-sm hover-card">
+            <div class="card-body">
+                <h1 class="text-center text-primary">Add Venue to Database</h1>
+                <br/>
+
+                {% if submitted %}
+                    <div class="alert alert-success text-center" role="alert">
+                        Your venue was submitted successfully!
+                    </div>
+                {% else %}
+                    <form action="" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            {{ form.as_p }}
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg btn-block hover-button">Submit</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center mt-5">
+            <h1 class="text-danger">Sorry! You Must Be Logged In To View This Page...</h1>
+            <a href="{% url 'login' %}" class="btn btn-outline-primary mt-3">Login Here</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Custom JavaScript -->
+<script>
+    // Optional: Add any custom JavaScript here
+    document.addEventListener('DOMContentLoaded', function() {
+        // Example: Show a success message for a few seconds
+        const alert = document.querySelector('.alert');
+        if (alert) {
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+    });
+</script>
+
+<!-- Custom CSS -->
+<style>
+    .card {
+        border: 1px solid #e0e0e0; /* Light border */
+        border-radius: 0.5rem; /* Rounded corners */
+        transition: transform 0.2s, box-shadow 0.2s; /* Smooth transition for hover effects */
+    }
+
+    .hover-card:hover {
+        transform: scale(1.02); /* Slightly enlarge the card on hover */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Enhance shadow on hover */
+    }
+
+    .btn-lg {
+        font-size: 1.25rem; /* Larger button text */
+    }
+
+    .alert {
+        margin-top: 20px; /* Space above the alert */
+    }
+
+    .hover-button {
+        transition: background-color 0.2s, transform 0.2s; /* Smooth transition for button hover */
+    }
+
+    .hover-button:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+        transform: scale(1.05); /* Slightly enlarge button on hover */
+    }
+</style>
+
+{% endblock %}

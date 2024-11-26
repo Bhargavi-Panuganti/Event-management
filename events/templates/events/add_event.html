@@ -1,0 +1,75 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    {% if user.is_authenticated %}
+        <h1 class="text-center text-primary">Add Event</h1>
+        <br/>
+
+        {% if submitted %}
+            <div class="alert alert-success text-center" role="alert">
+                Your Event Was Submitted Successfully!
+            </div>
+        {% else %}
+            <form id="eventForm" action="" method="POST" class="shadow p-4 rounded bg-light">
+                {% csrf_token %}
+                
+                <h4 class="text-secondary mb-3">Event Details</h4>
+                {{ form.as_p }}
+
+                <div class="text-center">
+                    <input type="submit" value="Submit" class="btn btn-primary" id="submitBtn">
+                </div>
+            </form>
+        {% endif %}
+    <br/>
+    {% else %}
+        <h1 class="text-danger text-center">Sorry! You Must Be Logged In To View This Page...</h1>
+        <div class="text-center">
+            <a href="{% url 'login' %}" class="btn btn-secondary">Login Here</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Custom JavaScript -->
+<script>
+    document.getElementById('eventForm').addEventListener('submit', function(event) {
+        // Prevent form submission
+        event.preventDefault();
+
+        // Confirmation dialog
+        const confirmation = confirm("Are you sure you want to submit this event?");
+        if (confirmation) {
+            // If confirmed, submit the form
+            this.submit();
+        }
+    });
+
+    // Basic form validation (optional)
+    document.getElementById('eventForm').addEventListener('input', function() {
+        const inputs = this.querySelectorAll('input, textarea, select');
+        let valid = true;
+        
+        inputs.forEach(input => {
+            if (!input.checkValidity()) {
+                valid = false;
+            }
+        });
+
+        document.getElementById('submitBtn').disabled = !valid;
+    });
+</script>
+<style>
+	body {
+    background-color: #f8f9fa; /* Light background color */
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+.alert {
+    margin-top: 20px;
+}
+</style>
+{% endblock %}

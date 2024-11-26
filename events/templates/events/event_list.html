@@ -1,0 +1,98 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center my-4">Upcoming Events</h1>
+</br>
+    <div class="row">
+        {% for event in event_list %}
+            {% if event.approved %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="card-title">{{ event }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">Venue: {{ event.venue }}</h6>
+                            <p class="card-text">
+                                <ul class="list-unstyled">
+                                    <li><strong>Date:</strong> {{ event.event_date }}</li>
+                                    <li><strong>Days Till Event:</strong> {{ event.Days_till }}</li>
+                                    <li><strong>Occurred:</strong> {{ event.Is_Past }}</li>
+                                    <li><strong>Venue Website:</strong> <a href="{{ event.venue.web }}" target="_blank">{{ event.venue.web }}</a></li>
+                                    <li><strong>Manager:</strong> {{ event.manager }}</li>
+                                    <li><strong>Description:</strong> {{ event.description }}</li>
+                                    <li><strong>Approved:</strong> {{ event.approved }}</li>
+                                    <li><strong>Attendees:</strong>
+                                        <ul>
+                                            {% for user in event.attendees.all %}
+                                                <li>{{ user }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </p>
+                        </div>
+                        {% if user.is_authenticated %}
+                            {% if user == event.manager %}
+                                <div class="card-footer text-muted">
+                                    <a href="{% url 'update-event' event.id %}" class="btn btn-outline-secondary btn-sm">Update Event</a>
+                                    <a href="{% url 'delete-event' event.id %}" class="btn btn-outline-danger btn-sm">Delete Event</a>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const deleteButtons = document.querySelectorAll('.btn-danger');
+
+      deleteButtons.forEach(button => {
+          button.addEventListener('click', function(event) {
+              const confirmed = confirm('Are you sure you want to delete this event?');
+              if (!confirmed) {
+                  event.preventDefault();
+              }
+          });
+      });
+  });
+</script>
+
+<style>
+  body {
+    background-color: #f8f9fa;
+}
+
+.card {
+    border: 2px solid #007bff; /* Blue border */
+    border-radius: 0.5rem; /* Rounded corners */
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+    font-size: 1.25rem;
+}
+
+.card-body {
+    background-color: #ffffff;
+}
+
+ul {
+    padding-left: 0;
+}
+
+ul.list-unstyled li {
+    margin-bottom: 0.5rem;
+}
+</style>
+{% endblock %}

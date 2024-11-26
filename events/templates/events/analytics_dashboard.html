@@ -1,0 +1,92 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+
+<div class="graph-container">
+    <h2 class="text-center">Most Attended Events</h2>
+    <img src="{{ graph_url }}" alt="Most Attended Events Graph" class="img-fluid rounded shadow">
+    <button id="download-btn" class="btn btn-primary mt-3">Download Graph</button>
+</div>
+<button id="fullscreen-btn" class="btn btn-secondary mt-3">Full Screen</button>
+<script>
+    document.getElementById('download-btn').addEventListener('click', () => {
+        const img = document.querySelector('.graph-container img');
+        const link = document.createElement('a');
+        link.href = img.src;
+        link.download = 'most_attended_events.png';
+        link.click();
+    });
+
+    document.getElementById('fullscreen-btn').addEventListener('click', () => {
+        const graphContainer = document.querySelector('.graph-container');
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        } else {
+            graphContainer.requestFullscreen();
+        }
+    });
+</script>
+
+<style>
+    .graph-container {
+        text-align: center;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        max-width: 800px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .graph-container h2 {
+        color: #007bff;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
+    .graph-container img {
+        max-width: 100%;
+        border-radius: 10px;
+    }
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        color: #fff;
+        background-color: #007bff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .btn:hover {
+        background-color: #0056b3;
+    }
+    .btn {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+.graph-container img:hover {
+    transform: scale(1.02);
+    transition: transform 0.3s ease;
+}
+.graph-container {
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+</style>
+
+
+{% endblock %}
